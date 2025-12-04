@@ -331,6 +331,16 @@
       background: var(--border);
     }
     
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-danger:hover, .btn-danger:active {
+      background: rgba(239, 68, 68, 0.3);
+    }
+    
     .btn-small {
       padding: 0.625rem 1rem;
       font-size: 0.875rem;
@@ -451,6 +461,12 @@
       </svg>
     );
     
+    const TrashIcon = () => (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{width: 16, height: 16}}>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+    );
+    
     const Spinner = () => (
       <svg className="spinner" viewBox="0 0 24 24">
         <circle style={{opacity: 0.25}} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
@@ -485,10 +501,14 @@
 
       // Load saved token
       useEffect(() => {
-        const saved = localStorage.getItem('gh_pat');
-        if (saved) {
-          setToken(saved);
-        } else {
+        try {
+          const saved = localStorage.getItem('gh_pat');
+          if (saved && saved.length > 0) {
+            setToken(saved);
+          } else {
+            setShowSettings(true);
+          }
+        } catch (e) {
           setShowSettings(true);
         }
       }, []);
@@ -502,10 +522,25 @@
       }, [autoMode, name, token]);
 
       const saveToken = () => {
-        localStorage.setItem('gh_pat', token);
-        setShowSettings(false);
-        setStatus({ type: 'success', message: 'Token saved!' });
-        setTimeout(() => setStatus({ type: '', message: '' }), 2000);
+        if (!token || token.trim().length === 0) {
+          setStatus({ type: 'error', message: 'Please enter a token first' });
+          setTimeout(() => setStatus({ type: '', message: '' }), 3000);
+          return;
+        }
+        try {
+          localStorage.setItem('gh_pat', token.trim());
+          // Verify it saved
+          const verified = localStorage.getItem('gh_pat');
+          if (verified === token.trim()) {
+            setShowSettings(false);
+            setStatus({ type: 'success', message: 'Token saved!' });
+          } else {
+            setStatus({ type: 'error', message: 'Could not save token - storage issue' });
+          }
+        } catch (e) {
+          setStatus({ type: 'error', message: 'Storage blocked - check Safari settings' });
+        }
+        setTimeout(() => setStatus({ type: '', message: '' }), 3000);
       };
 
       const handleCreate = async (e) => {
@@ -543,6 +578,8 @@
           const data = await res.json();
 
           if (res.ok) {
+            // Auto-save working token
+            try { localStorage.setItem('gh_pat', token); } catch(e) {}
             setStatus({ 
               type: 'success', 
               message: `Created: ${data.full_name}`,
@@ -570,6 +607,21 @@
         navigator.clipboard.writeText(base);
         setStatus({ type: 'success', message: 'URL copied!' });
         setTimeout(() => setStatus({ type: '', message: '' }), 2000);
+      };
+
+      const resetApp = () => {
+        if (confirm('Clear saved token and reset the app?')) {
+          try {
+            localStorage.removeItem('gh_pat');
+            localStorage.clear();
+          } catch(e) {}
+          setToken('');
+          setName('');
+          setDescription('');
+          setIsPrivate(true);
+          setStatus({ type: 'success', message: 'App reset!' });
+          setTimeout(() => setStatus({ type: '', message: '' }), 2000);
+        }
       };
 
       return (
@@ -615,6 +667,13 @@
                 <p className="panel-divider-label">Apple Shortcuts</p>
                 <button className="btn btn-secondary btn-small" onClick={copyBaseURL}>
                   <CopyIcon /> Copy Base URL
+                </button>
+              </div>
+              
+              <div className="panel-divider">
+                <p className="panel-divider-label">Reset</p>
+                <button className="btn btn-danger btn-small" onClick={resetApp}>
+                  <TrashIcon /> Clear Token & Reset
                 </button>
               </div>
             </div>
