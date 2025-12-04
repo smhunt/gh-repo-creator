@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="New Repo">
+  <meta name="theme-color" content="#09090b">
+  <meta name="description" content="Quickly create GitHub repos from your phone">
+  
+  <title>New Repo</title>
+  
+  <!-- PWA Manifest inline via data URI -->
+  <link rel="manifest" href="data:application/json,{
+    &quot;name&quot;: &quot;GitHub Repo Creator&quot;,
+    &quot;short_name&quot;: &quot;New Repo&quot;,
+    &quot;description&quot;: &quot;Quickly create GitHub repositories&quot;,
+    &quot;start_url&quot;: &quot;.&quot;,
+    &quot;display&quot;: &quot;standalone&quot;,
+    &quot;background_color&quot;: &quot;#09090b&quot;,
+    &quot;theme_color&quot;: &quot;#09090b&quot;,
+    &quot;icons&quot;: [{
+      &quot;src&quot;: &quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2310b981' rx='20' width='100' height='100'/><path fill='white' d='M50 10C27.9 10 10 27.9 10 50c0 17.7 11.5 32.7 27.4 38a3.3 3.3 0 002.7-1.9c0-.9 0-4.1 0-7.5-10.1 1.9-12.7-2.5-13.5-4.7-.5-1.2-2.4-4.7-4.1-5.7-1.4-.7-3.4-2.6 0-2.6 3.2 0 5.4 2.9 6.2 4.1 3.6 6.1 9.4 4.4 11.6 3.3.3-2.6 1.4-4.4 2.6-5.4-8.9-1-18.2-4.5-18.2-19.8 0-4.4 1.5-8 4.1-10.8-.4-1-1.8-5.1.4-10.6 0 0 3.4-1.1 11 4.1 3.2-.9 6.6-1.4 10-1.4s6.8.5 10 1.4c7.6-5.2 11-4.1 11-4.1 2.2 5.5.8 9.6.4 10.6 2.6 2.8 4.1 6.4 4.1 10.8 0 15.4-9.4 18.8-18.3 19.8 1.4 1.3 2.7 3.7 2.7 7.4 0 5.4 0 9.7 0 11 0 1 .7 2.2 2.8 1.8C78.5 82.7 90 67.6 90 50 90 27.9 72.1 10 50 10z'/></svg>&quot;,
+      &quot;sizes&quot;: &quot;512x512&quot;,
+      &quot;type&quot;: &quot;image/svg+xml&quot;,
+      &quot;purpose&quot;: &quot;any maskable&quot;
+    }]
+  }">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%2310b981' rx='20' width='100' height='100'/><path fill='white' d='M50 10C27.9 10 10 27.9 10 50c0 17.7 11.5 32.7 27.4 38a3.3 3.3 0 002.7-1.9c0-.9 0-4.1 0-7.5-10.1 1.9-12.7-2.5-13.5-4.7-.5-1.2-2.4-4.7-4.1-5.7-1.4-.7-3.4-2.6 0-2.6 3.2 0 5.4 2.9 6.2 4.1 3.6 6.1 9.4 4.4 11.6 3.3.3-2.6 1.4-4.4 2.6-5.4-8.9-1-18.2-4.5-18.2-19.8 0-4.4 1.5-8 4.1-10.8-.4-1-1.8-5.1.4-10.6 0 0 3.4-1.1 11 4.1 3.2-.9 6.6-1.4 10-1.4s6.8.5 10 1.4c7.6-5.2 11-4.1 11-4.1 2.2 5.5.8 9.6.4 10.6 2.6 2.8 4.1 6.4 4.1 10.8 0 15.4-9.4 18.8-18.3 19.8 1.4 1.3 2.7 3.7 2.7 7.4 0 5.4 0 9.7 0 11 0 1 .7 2.2 2.8 1.8C78.5 82.7 90 67.6 90 50 90 27.9 72.1 10 50 10z'/></svg>">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    :root {
+      --bg: #09090b;
+      --surface: #18181b;
+      --surface-hover: #27272a;
+      --border: #27272a;
+      --border-focus: #10b981;
+      --text: #fafafa;
+      --text-muted: #71717a;
+      --text-dim: #52525b;
+      --accent: #10b981;
+      --accent-hover: #34d399;
+      --error: #ef4444;
+      --error-bg: rgba(239, 68, 68, 0.15);
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --info-bg: rgba(59, 130, 246, 0.15);
+      --info-border: #3b82f6;
+    }
+    
+    html, body {
+      font-family: 'Space Grotesk', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+    
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    
+    #app {
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 1rem;
+      padding-bottom: 2rem;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-top: 0.5rem;
+    }
+    
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .logo {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+    
+    .title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    
+    .settings-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    
+    .settings-btn:hover, .settings-btn:active {
+      background: var(--surface);
+      color: var(--text);
+    }
+    
+    .settings-btn svg {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+    
+    .auto-banner {
+      background: var(--info-bg);
+      border: 1px solid var(--info-border);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: slideIn 0.3s ease;
+    }
+    
+    .auto-banner svg {
+      width: 18px;
+      height: 18px;
+      color: #60a5fa;
+      flex-shrink: 0;
+    }
+    
+    .auto-banner span {
+      color: #93c5fd;
+      font-size: 0.875rem;
+    }
+    
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .panel-label {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    
+    .panel-hint {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 0.75rem;
+      line-height: 1.5;
+    }
+    
+    .panel-hint code {
+      background: var(--bg);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+    }
+    
+    .panel-divider {
+      border-top: 1px solid var(--border);
+      margin: 1rem 0;
+      padding-top: 1rem;
+    }
+    
+    .panel-divider-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    
+    input[type="text"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      transition: border-color 0.15s ease;
+      -webkit-appearance: none;
+    }
+    
+    input[type="text"]:focus,
+    input[type="password"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--border-focus);
+    }
+    
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-dim);
+    }
+    
+    .input-large {
+      font-size: 1.125rem;
+      padding: 1rem;
+    }
+    
+    textarea {
+      resize: none;
+      min-height: 4.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.875rem 1rem;
+    }
+    
+    .toggle-label {
+      color: var(--text);
+      font-size: 0.9375rem;
+    }
+    
+    .toggle {
+      width: 48px;
+      height: 28px;
+      background: var(--border);
+      border: none;
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    
+    .toggle.active {
+      background: var(--accent);
+    }
+    
+    .toggle-knob {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    
+    .toggle.active .toggle-knob {
+      transform: translateX(20px);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: var(--accent);
+      color: #022c22;
+    }
+    
+    .btn-primary:hover, .btn-primary:active {
+      background: var(--accent-hover);
+    }
+    
+    .btn-primary:disabled {
+      background: var(--border);
+      color: var(--text-dim);
+      cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+      background: var(--surface-hover);
+      color: var(--text);
+    }
+    
+    .btn-secondary:hover, .btn-secondary:active {
+      background: var(--border);
+    }
+    
+    .btn-small {
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+    }
+    
+    .spinner {
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .status {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      animation: slideIn 0.3s ease;
+    }
+    
+    .status-error {
+      background: var(--error-bg);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    
+    .status-success {
+      background: var(--success-bg);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    
+    .status-text {
+      font-size: 0.875rem;
+      word-break: break-word;
+    }
+    
+    .status-link {
+      display: block;
+      margin-top: 0.5rem;
+      color: var(--accent);
+      font-size: 0.875rem;
+      text-decoration: underline;
+    }
+    
+    .help-box {
+      margin-top: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      opacity: 0.7;
+    }
+    
+    .help-title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    
+    .help-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6875rem;
+      color: var(--text-dim);
+      word-break: break-all;
+      line-height: 1.6;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+    
+    /* Hide on iOS when installed */
+    @media (display-mode: standalone) {
+      .footer {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    
+    // SVG Icons as components
+    const GitHubLogo = () => (
+      <svg viewBox="0 0 24 24" className="logo">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+      </svg>
+    );
+    
+    const SettingsIcon = () => (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    );
+    
+    const BoltIcon = () => (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    );
+    
+    const CopyIcon = () => (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{width: 16, height: 16}}>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+    );
+    
+    const Spinner = () => (
+      <svg className="spinner" viewBox="0 0 24 24">
+        <circle style={{opacity: 0.25}} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+        <path style={{opacity: 0.75}} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+      </svg>
+    );
+    
+    function App() {
+      const [token, setToken] = useState('');
+      const [name, setName] = useState('');
+      const [description, setDescription] = useState('');
+      const [isPrivate, setIsPrivate] = useState(true);
+      const [status, setStatus] = useState({ type: '', message: '', url: '' });
+      const [loading, setLoading] = useState(false);
+      const [showSettings, setShowSettings] = useState(false);
+      const [autoMode, setAutoMode] = useState(false);
+      const hasAutoRun = useRef(false);
+
+      // Parse URL parameters on load
+      useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const urlName = params.get('name');
+        const urlDesc = params.get('desc') || params.get('description') || '';
+        const urlPrivate = params.get('private');
+        const urlAuto = params.get('auto');
+
+        if (urlName) setName(urlName);
+        if (urlDesc) setDescription(urlDesc);
+        if (urlPrivate !== null) setIsPrivate(urlPrivate !== 'false' && urlPrivate !== '0');
+        if (urlAuto === 'true' || urlAuto === '1') setAutoMode(true);
+      }, []);
+
+      // Load saved token
+      useEffect(() => {
+        const saved = localStorage.getItem('gh_pat');
+        if (saved) {
+          setToken(saved);
+        } else {
+          setShowSettings(true);
+        }
+      }, []);
+
+      // Auto-create if auto mode is enabled
+      useEffect(() => {
+        if (autoMode && name && token && !hasAutoRun.current) {
+          hasAutoRun.current = true;
+          handleCreate();
+        }
+      }, [autoMode, name, token]);
+
+      const saveToken = () => {
+        localStorage.setItem('gh_pat', token);
+        setShowSettings(false);
+        setStatus({ type: 'success', message: 'Token saved!' });
+        setTimeout(() => setStatus({ type: '', message: '' }), 2000);
+      };
+
+      const handleCreate = async (e) => {
+        if (e) e.preventDefault();
+        
+        if (!token) {
+          setShowSettings(true);
+          setStatus({ type: 'error', message: 'Add your GitHub token first' });
+          return;
+        }
+        if (!name.trim()) {
+          setStatus({ type: 'error', message: 'Project name required' });
+          return;
+        }
+
+        setLoading(true);
+        setStatus({ type: '', message: '' });
+
+        try {
+          const res = await fetch('https://api.github.com/user/repos', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              'Accept': 'application/vnd.github+json'
+            },
+            body: JSON.stringify({
+              name: name.trim(),
+              description: description.trim(),
+              private: isPrivate,
+              auto_init: true
+            })
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            setStatus({ 
+              type: 'success', 
+              message: `Created: ${data.full_name}`,
+              url: data.html_url 
+            });
+            if (!autoMode) {
+              setName('');
+              setDescription('');
+            }
+          } else {
+            setStatus({ 
+              type: 'error', 
+              message: data.message || 'Failed to create repo' 
+            });
+          }
+        } catch (err) {
+          setStatus({ type: 'error', message: 'Network error — check connection' });
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const copyBaseURL = () => {
+        const base = window.location.origin + window.location.pathname;
+        navigator.clipboard.writeText(base);
+        setStatus({ type: 'success', message: 'URL copied!' });
+        setTimeout(() => setStatus({ type: '', message: '' }), 2000);
+      };
+
+      return (
+        <>
+          {/* Header */}
+          <div className="header">
+            <div className="header-left">
+              <GitHubLogo />
+              <h1 className="title">New Repo</h1>
+            </div>
+            <button className="settings-btn" onClick={() => setShowSettings(!showSettings)}>
+              <SettingsIcon />
+            </button>
+          </div>
+
+          {/* Auto Mode Banner */}
+          {autoMode && (
+            <div className="auto-banner">
+              <BoltIcon />
+              <span>Auto-create from Shortcut</span>
+            </div>
+          )}
+
+          {/* Settings Panel */}
+          {showSettings && (
+            <div className="panel">
+              <label className="panel-label">GitHub Personal Access Token</label>
+              <input
+                type="password"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="ghp_xxxxxxxxxxxx"
+              />
+              <p className="panel-hint">
+                Create at GitHub → Settings → Developer settings → Personal access tokens. 
+                Needs <code>repo</code> scope.
+              </p>
+              <button className="btn btn-secondary btn-small" onClick={saveToken} style={{marginTop: '0.75rem'}}>
+                Save Token
+              </button>
+              
+              <div className="panel-divider">
+                <p className="panel-divider-label">Apple Shortcuts</p>
+                <button className="btn btn-secondary btn-small" onClick={copyBaseURL}>
+                  <CopyIcon /> Copy Base URL
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Main Form */}
+          <form onSubmit={handleCreate}>
+            <div className="form-group">
+              <input
+                type="text"
+                className="input-large"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="project-name"
+                autoCapitalize="none"
+                autoCorrect="off"
+                autoComplete="off"
+                spellCheck="false"
+              />
+            </div>
+
+            <div className="form-group">
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Brief description (optional)"
+                rows={2}
+              />
+            </div>
+
+            <div className="form-group">
+              <div className="toggle-row">
+                <span className="toggle-label">Private repo</span>
+                <button
+                  type="button"
+                  className={`toggle ${isPrivate ? 'active' : ''}`}
+                  onClick={() => setIsPrivate(!isPrivate)}
+                >
+                  <span className="toggle-knob" />
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? <><Spinner /> Creating...</> : 'Create Repository'}
+            </button>
+          </form>
+
+          {/* Status */}
+          {status.message && (
+            <div className={`status ${status.type === 'error' ? 'status-error' : 'status-success'}`}>
+              <p className="status-text">{status.message}</p>
+              {status.url && (
+                <a href={status.url} target="_blank" rel="noopener noreferrer" className="status-link">
+                  Open in GitHub →
+                </a>
+              )}
+            </div>
+          )}
+
+          {/* Help Box */}
+          <div className="help-box">
+            <p className="help-title">URL Parameters for Shortcuts</p>
+            <p className="help-code">
+              ?name=repo-name&desc=Description&private=true&auto=true
+            </p>
+          </div>
+
+          <p className="footer">
+            Share → Add to Home Screen
+          </p>
+        </>
+      );
+    }
+    
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+  </script>
+</body>
+</html>
