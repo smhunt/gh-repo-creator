@@ -8,6 +8,7 @@
   <meta name="apple-mobile-web-app-title" content="New Repo">
   <meta name="theme-color" content="#09090b">
   <meta name="description" content="Quickly create GitHub repos from your phone">
+  <meta name="app-version" content="1.1.0">
   
   <title>New Repo</title>
   
@@ -341,6 +342,50 @@
       background: rgba(239, 68, 68, 0.3);
     }
     
+    .update-banner {
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+      border: 1px solid rgba(129, 140, 248, 0.4);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      animation: slideIn 0.3s ease;
+    }
+    
+    .update-banner-text {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #c4b5fd;
+      font-size: 0.875rem;
+    }
+    
+    .update-banner svg {
+      width: 18px;
+      height: 18px;
+      color: #a78bfa;
+      flex-shrink: 0;
+    }
+    
+    .update-btn {
+      background: rgba(139, 92, 246, 0.3);
+      border: none;
+      color: #e9d5ff;
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    
+    .update-btn:hover {
+      background: rgba(139, 92, 246, 0.5);
+    }
+    
     .btn-small {
       padding: 0.625rem 1rem;
       font-size: 0.875rem;
@@ -467,6 +512,12 @@
       </svg>
     );
     
+    const UpdateIcon = () => (
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+    );
+    
     const Spinner = () => (
       <svg className="spinner" viewBox="0 0 24 24">
         <circle style={{opacity: 0.25}} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
@@ -483,6 +534,7 @@
       const [loading, setLoading] = useState(false);
       const [showSettings, setShowSettings] = useState(false);
       const [autoMode, setAutoMode] = useState(false);
+      const [updateAvailable, setUpdateAvailable] = useState(false);
       const hasAutoRun = useRef(false);
 
       // Parse URL parameters on load
@@ -520,6 +572,44 @@
           handleCreate();
         }
       }, [autoMode, name, token]);
+
+      // Check for app updates
+      useEffect(() => {
+        const getCurrentVersion = () => {
+          const meta = document.querySelector('meta[name="app-version"]');
+          return meta ? meta.getAttribute('content') : null;
+        };
+
+        const checkForUpdates = async () => {
+          try {
+            const response = await fetch(window.location.href + '?_=' + Date.now(), {
+              cache: 'no-store'
+            });
+            const html = await response.text();
+            const match = html.match(/name="app-version"\s+content="([^"]+)"/);
+            if (match && match[1]) {
+              const remoteVersion = match[1];
+              const currentVersion = getCurrentVersion();
+              if (currentVersion && remoteVersion !== currentVersion) {
+                setUpdateAvailable(true);
+              }
+            }
+          } catch (e) {
+            // Silently fail - not critical
+          }
+        };
+
+        // Check on load after 5 seconds
+        const initialCheck = setTimeout(checkForUpdates, 5000);
+        
+        // Then check every 60 seconds
+        const interval = setInterval(checkForUpdates, 60000);
+
+        return () => {
+          clearTimeout(initialCheck);
+          clearInterval(interval);
+        };
+      }, []);
 
       const saveToken = () => {
         if (!token || token.trim().length === 0) {
@@ -642,6 +732,19 @@
             <div className="auto-banner">
               <BoltIcon />
               <span>Auto-create from Shortcut</span>
+            </div>
+          )}
+
+          {/* Update Available Banner */}
+          {updateAvailable && (
+            <div className="update-banner">
+              <div className="update-banner-text">
+                <UpdateIcon />
+                <span>New version available</span>
+              </div>
+              <button className="update-btn" onClick={() => window.location.reload(true)}>
+                Update
+              </button>
             </div>
           )}
 
